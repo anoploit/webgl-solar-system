@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stars</title>
+    <style>
+        body,canvas {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+
+/*
+Coded by Anoploit
+1038255
+21-01-2024
+
+NOTE:
+
+
+THIS FILE IS 'IRRELEVANT' AND ONLY THE CODE FOR THE UNIVERSE/STARS PICTURES THAT I USED IN THE SIMULATION. 
+PLEASE REFER TO THAT FILE!
+THIS IS ONLY TO SHOW THAT I CODED THAT BACKGROUND PICTURE!
+
+
+*/
+
+        var gl = document.getElementById("myCanvas").getContext("webgl2");
+
+        // Set canvas size to fill the entire window
+        gl.canvas.width = window.innerWidth;
+        gl.canvas.height = window.innerHeight;
+        // Set the viewport size
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        // Vertex Shader
+        let vs = gl.createShader(gl.VERTEX_SHADER);
+        let vsSource = 
+        `#version 300 es 
+         in vec3 aCol;
+         out vec3 color;
+            void main() {
+                color = vec3(0.0, 0.0, 0.0);
+                gl_Position = vec4(aCol, 1.0);
+            }`;
+
+        gl.shaderSource(vs, vsSource);
+        gl.compileShader(vs);
+        let status = gl.getShaderParameter(vs, gl.COMPILE_STATUS);
+        if(!status){
+            let log = gl.getShaderInfoLog(vs);
+            throw new Error(log);
+        }
+
+        // Fragment Shader
+        let fs = gl.createShader(gl.FRAGMENT_SHADER);
+        let fsSource = 
+        `#version 300 es
+         precision mediump float;
+         in vec3 color;
+         out vec4 fragColor;
+
+         float random(vec2 seed) {
+            return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);
+         }
+
+         void main(void) {
+            fragColor = vec4(color, 1.0);
+            if (random(gl_FragCoord.xy) < 0.0001) {
+                fragColor = vec4(1.0);
+            }
+         }`;
+
+        gl.shaderSource(fs, fsSource);
+        gl.compileShader(fs);
+        status = gl.getShaderParameter(fs, gl.COMPILE_STATUS);
+        if(!status){
+            let log = gl.getShaderInfoLog(fs);
+            throw new Error(log);
+        }
+
+        let program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+        gl.deleteShader(vs);
+        gl.deleteShader(fs);
+        gl.useProgram(program);
+
+        // Setup Vertex Buffer and Attribute
+        let vertices = new Float32Array([
+            -1.0, -1.0, 0.0,
+             1.0, -1.0, 0.0,
+             1.0,  1.0, 0.0,
+             1.0,  1.0, 0.0,
+            -1.0, -1.0, 0.0,
+            -1.0,  1.0, 0.0,
+        ]);
+
+        let vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        let colLocation = gl.getAttribLocation(program, "aCol");
+        gl.vertexAttribPointer(colLocation, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(colLocation);
+
+        // Rendering
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+        
+    </script>
+</body>
+</html>
