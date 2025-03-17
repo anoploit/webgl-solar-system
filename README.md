@@ -2,6 +2,8 @@
 
 An interactive 3D simulation of the solar system using WebGL. It demonstrates planetary orbits, light interactions, and basic rendering techniques. 
 
+https://github.com/user-attachments/assets/901e0031-6f30-42b5-a1a3-feba31b5d2cc
+
 ## Features
 
 - 3D rendering of planets
